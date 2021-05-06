@@ -91,7 +91,7 @@ public class PanicWidget extends AppWidgetProvider {
             Intent cIntent = new Intent(Intent.ACTION_CALL);
             cIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             cIntent.setData(Uri.fromParts("tel", number, null));
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, cIntent, 0);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, cIntent, PendingIntent.FLAG_ONE_SHOT);
 
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Service.ALARM_SERVICE);
             alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + 32 * 1000, pendingIntent);

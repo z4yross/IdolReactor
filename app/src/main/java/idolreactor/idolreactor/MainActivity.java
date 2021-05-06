@@ -9,6 +9,7 @@ import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
@@ -22,16 +23,25 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.wafflecopter.multicontactpicker.ContactResult;
+import com.wafflecopter.multicontactpicker.LimitColumn;
+import com.wafflecopter.multicontactpicker.MultiContactPicker;
+
 import java.io.File;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MAIN_ACTIVITY";
+    private static final int CONTACT_PICKER_REQUEST = 1;
 
     private final static int SEND_SMS_PERMISSION_REQ = 1;
     private Button btn;
@@ -62,7 +72,9 @@ public class MainActivity extends AppCompatActivity {
                 checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
                 checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION) &&
                 checkPermission(Manifest.permission.INTERNET) &&
-                checkPermission(Manifest.permission.ACCESS_NETWORK_STATE)) {
+                checkPermission(Manifest.permission.ACCESS_NETWORK_STATE) &&
+                checkPermission(Manifest.permission.READ_CONTACTS) &&
+                checkPermission(Manifest.permission.SYSTEM_ALERT_WINDOW)) {
             btn.setEnabled(true);
             btn2.setEnabled(true);
 
@@ -80,18 +92,57 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_FINE_LOCATION,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
                     Manifest.permission.INTERNET,
-                    Manifest.permission.ACCESS_NETWORK_STATE
+                    Manifest.permission.ACCESS_NETWORK_STATE,
+                    Manifest.permission.READ_CONTACTS,
+                    Manifest.permission.SYSTEM_ALERT_WINDOW
             }, SEND_SMS_PERMISSION_REQ);
         }
+
+        if (!AppService.number.equals("")){
+            number = AppService.number;
+            editText.setText(number);
+        }
+
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                number = s.toString();
+                AppService.number = s.toString();
+            }
+        });
 
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!String.valueOf(editText.getText()).equals("")){
-                    AppService.number = String.valueOf(editText.getText());
-                } else {
-                    Toast.makeText(getApplicationContext(), "Ingrese un numero de telefono", Toast.LENGTH_LONG).show();
-                }
+
+                new MultiContactPicker.Builder(MainActivity.this) //Activity/fragment context
+                        .searchIconColor(Color.WHITE) //Option - default: White
+                        .setChoiceMode(MultiContactPicker.CHOICE_MODE_SINGLE) //Optional - default: CHOICE_MODE_MULTIPLE
+                        .handleColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)) //Optional - default: Azure Blue
+                        .bubbleColor(ContextCompat.getColor(MainActivity.this, R.color.colorPrimary)) //Optional - default: Azure Blue
+                        .bubbleTextColor(Color.WHITE) //Optional - default: White
+                        .setTitleText("Seleccionar contacto") //Optional - default: Select Contacts
+                        .setLoadingType(MultiContactPicker.LOAD_ASYNC) //Optional - default LOAD_ASYNC (wait till all loaded vs stream results)
+                        .setActivityAnimations(android.R.anim.fade_in, android.R.anim.fade_out,
+                                android.R.anim.fade_in,
+                                android.R.anim.fade_out) //Optional - default: No animation overrides
+                        .showPickerForResult(CONTACT_PICKER_REQUEST);
+
+//                if (!String.valueOf(editText.getText()).equals("")){
+//                    AppService.number = String.valueOf(editText.getText());
+//                } else {
+//                    Toast.makeText(getApplicationContext(), "Ingrese un numero de telefono", Toast.LENGTH_LONG).show();
+//                }
             }
         });
 
@@ -110,6 +161,15 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if (savedInstanceState != null) {
+            String myString = savedInstanceState.getString("number");
+
+            AppService.number = myString;
+            number = myString;
+            editText.setText(myString);
+            Log.d("RESTORE", myString);
+        }
     }
 
 
@@ -141,6 +201,38 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == CONTACT_PICKER_REQUEST){
+            if(resultCode == RESULT_OK) {
+                List<ContactResult> results = MultiContactPicker.obtainResult(data);
+                String res = results.get(0).getPhoneNumbers().get(0).getNumber();
+                editText.setText(res);
+                AppService.number = res;
+                number = res;
+            }
+        }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putString("number", editText.getText().toString());
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        String myString = savedInstanceState.getString("number");
+
+        AppService.number = myString;
+        number = myString;
+        editText.setText(myString);
+        Log.d("RESTORE", myString);
     }
 
 }
