@@ -11,7 +11,7 @@
 - [ ] Distribuir.
 - [ ] Crear un video de explicacion.
 - [ ] Documentar.
-- [ ] Mejorar interfaz.
+- [X] Mejorar interfaz.
 - [ ] Guardar el video en algun servicio en linea o en una base de datos.
  
  
