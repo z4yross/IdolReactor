@@ -70,7 +70,7 @@ public class PanicWidget extends AppWidgetProvider {
         for(int i = 0; i < N; i++){
             int appWidgetId = appWidgetIds[i];
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.panic_widget);
-            views.setOnClickPendingIntent(R.id.panicButtonImageView, getPendingSelfIntent(context));
+            views.setOnClickPendingIntent(R.id.textView2, getPendingSelfIntent(context));
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
 
@@ -127,7 +127,7 @@ public class PanicWidget extends AppWidgetProvider {
     }
 
     private void setUpMediaRecorder(Context context) throws IOException {
-        final File tempFile = new File(Environment.getExternalStorageDirectory(), "rcdr.mp4");
+        final File tempFile = new File(context.getExternalMediaDirs()[0], "rcdr.mp4");
         tempFile.createNewFile();
 
         mediaRecorder = new MediaRecorder();
@@ -175,7 +175,7 @@ public class PanicWidget extends AppWidgetProvider {
                         mediaRecorder.start();
                         recording = true;
 
-                        Toast.makeText(context, "Recording", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Grabando: " + context.getExternalMediaDirs()[0].getAbsolutePath() + "/rcdr.mp4", Toast.LENGTH_SHORT).show();
 
                         mSession.setRepeatingRequest(mCaptureRequest, new CameraCaptureSession.CaptureCallback() {
                             @Override
@@ -223,7 +223,7 @@ public class PanicWidget extends AppWidgetProvider {
                 @Override
                 public void onError(CameraDevice camera, int error) {
                     Log.d(TAG, "EROOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOR" + error);
-                    Toast.makeText(context, "ERROR: " + error, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "ERROR: Servicio no activo", Toast.LENGTH_SHORT).show();
                     recording = false;
                 }
             },null);

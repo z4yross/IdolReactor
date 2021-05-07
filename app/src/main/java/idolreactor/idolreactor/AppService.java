@@ -7,8 +7,12 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
+import android.widget.RemoteViews;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+//import android.support.annotation.Nullable;
+//import android.support.v4.app.NotificationCompat;
 
 
 public class AppService extends android.app.Service {
@@ -30,10 +34,15 @@ public class AppService extends android.app.Service {
         Intent intent1 = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent1, 0);
 
+        RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_layout);
+
         Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Servicio activo")
-                .setContentText("Boton de panico preparado")
+//                .setContentTitle("IdolReactor")
+//                .setContentText("Esperando")
                 .setSmallIcon(R.mipmap.ic_launcher)
+                .setCustomContentView(notificationLayout)
+                .setCustomBigContentView(notificationLayout)
+//                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
                 .setContentIntent(pendingIntent)
                 .build();
 

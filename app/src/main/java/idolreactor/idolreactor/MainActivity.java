@@ -3,26 +3,13 @@ package idolreactor.idolreactor;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.Notification;
-import android.app.PendingIntent;
-import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.hardware.camera2.CameraCaptureSession;
-import android.hardware.camera2.CameraDevice;
-import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CaptureRequest;
-import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Telephony;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -32,11 +19,21 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.wafflecopter.multicontactpicker.ContactResult;
-import com.wafflecopter.multicontactpicker.LimitColumn;
 import com.wafflecopter.multicontactpicker.MultiContactPicker;
 
 import java.io.File;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+//import android.support.annotation.NonNull;
+//import android.support.v4.app.ActivityCompat;
+//import android.support.v4.content.ContextCompat;
+//import android.support.v7.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,8 +57,13 @@ public class MainActivity extends AppCompatActivity {
         btn2 = findViewById(R.id.button2);
         editText = findViewById(R.id.editTextPhone);
 
+        CardView cardView = findViewById(R.id.card_view);
+        cardView.setBackgroundResource(R.drawable.corner_card_view);
+
         btn.setEnabled(false);
         btn2.setEnabled(false);
+
+        if (AppService.running == 1)  btn2.setText("Detener Servicio");
 
         if (checkPermission(Manifest.permission.SEND_SMS) &&
                 checkPermission(Manifest.permission.CAMERA) &&
