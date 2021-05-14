@@ -187,19 +187,7 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
                     btn.setEnabled(true);
                     btn2.setEnabled(true);
-                    File file = new File(Environment.getExternalStorageDirectory(), "data");
-
-                    if (!file.exists()) {
-                        file.mkdirs();
-                        if (file.isDirectory()) {
-                            Toast.makeText(getApplicationContext(), file.getAbsolutePath(), Toast.LENGTH_LONG).show();
-                        } else {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            String message = "Message: No se pudo crear el directorio" + "\nPath:" + Environment.getExternalStorageDirectory() + "\nmkdirs" + file.mkdirs();
-                            builder.setMessage(message);
-                            builder.show();
-                        }
-                    }
+                    Toast.makeText(getApplicationContext(), getApplicationContext().getExternalMediaDirs()[0].getAbsolutePath(), Toast.LENGTH_LONG).show();
                 }
                 break;
         }
